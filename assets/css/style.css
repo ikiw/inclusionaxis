@@ -79,6 +79,14 @@
   --grad-mat: linear-gradient(135deg, #f7fcfc 0%, #eaf5f5 48%, #eef7f1 100%);
   --ring: inset 0 0 0 1px rgb(4 23 61 / 9%);
 
+  /* Top-light sheen laid over media, so a flat photograph gains a sense of
+     surface instead of reading as a pasted rectangle. */
+  --sheen: linear-gradient(180deg, rgb(255 255 255 / 16%) 0%,
+    rgb(255 255 255 / 0%) 38%, rgb(4 23 61 / 0%) 62%, rgb(4 23 61 / 10%) 100%);
+  /* Contained artwork gets a cast shadow so it sits *on* the mat. */
+  --drop: drop-shadow(0 4px 8px rgb(4 23 61 / 14%))
+    drop-shadow(0 12px 22px rgb(4 23 61 / 12%));
+
   --focus: #0040a0;
   --focus-halo: #f8a000;
 
@@ -106,8 +114,8 @@
   --space-sm: clamp(0.9rem, 0.82rem + 0.35vw, 1.1rem);
   --space-md: clamp(1.15rem, 0.92rem + 1vw, 1.75rem);
   --space-lg: clamp(1.75rem, 1.35rem + 1.8vw, 2.75rem);
-  --space-xl: clamp(2.5rem, 1.75rem + 3.2vw, 4.25rem);
-  --space-2xl: clamp(3.25rem, 2.1rem + 5vw, 6rem);
+  --space-xl: clamp(2.25rem, 1.6rem + 2.8vw, 3.75rem);
+  --space-2xl: clamp(3rem, 2rem + 4.4vw, 5.25rem);
 
   --radius-sm: 8px;
   --radius: 14px;
@@ -173,6 +181,10 @@ html[data-contrast="high"] {
   --shadow-sm: none;
   --shadow: none;
   --shadow-lift: none;
+  --grad-mat: none;
+  --sheen: none;
+  --drop: none;
+  --ring: inset 0 0 0 1px currentColor;
 }
 
 html[data-contrast="high"] a { text-decoration: underline; }
@@ -413,6 +425,7 @@ a:hover {
   margin-bottom: var(--space-2xs);
 }
 
+.in-short:last-child { margin-bottom: 0; }
 .in-short p:last-child { margin-bottom: 0; }
 .in-short p { max-width: 60ch; }
 
@@ -874,6 +887,10 @@ a:hover {
   filter: saturate(1.08) contrast(1.04);
 }
 
+/* Group photograph: the disabled participants sit lower-right in the frame,
+   which is exactly the part of the hero the scrim leaves clear. */
+.hero__media--group img { object-position: 90% 50%; }
+
 /* Reading scrim.
    The photograph should stay visible, so instead of flooding the whole hero
    with navy we darken only the column the text occupies and let the gradient
@@ -898,11 +915,59 @@ a:hover {
     linear-gradient(
       92deg,
       rgb(4 23 61 / 90%) 0%,
-      rgb(4 23 61 / 87%) 46%,
-      rgb(4 23 61 / 76%) 64%,
-      rgb(4 23 61 / 34%) 88%,
-      rgb(4 23 61 / 20%) 100%
+      rgb(4 23 61 / 88%) 50%,
+      rgb(4 23 61 / 82%) 70%,
+      rgb(4 23 61 / 76%) 79%,
+      rgb(4 23 61 / 40%) 90%,
+      rgb(4 23 61 / 26%) 100%
     );
+}
+
+/* The text column is a fixed 46rem, so the wider the viewport the smaller the
+   fraction of it the text occupies. Measured text edges: 75.6% at 1000px,
+   61.4% at 1280px, 59.1% at 1600px. Each step therefore holds the plateau to
+   just past the measured edge and then clears earlier, letting more of the
+   photograph through without ever dropping the text below 7:1. */
+@media (min-width: 75em) {
+  .hero__media::after {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(4 23 61 / 32%) 0%,
+        rgb(4 23 61 / 8%) 34%,
+        rgb(4 23 61 / 52%) 100%
+      ),
+      linear-gradient(
+        92deg,
+        rgb(4 23 61 / 90%) 0%,
+        rgb(4 23 61 / 88%) 40%,
+        rgb(4 23 61 / 80%) 63%,
+        rgb(4 23 61 / 44%) 77%,
+        rgb(4 23 61 / 24%) 90%,
+        rgb(4 23 61 / 20%) 100%
+      );
+  }
+}
+
+@media (min-width: 100em) {
+  .hero__media::after {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(4 23 61 / 30%) 0%,
+        rgb(4 23 61 / 6%) 34%,
+        rgb(4 23 61 / 50%) 100%
+      ),
+      linear-gradient(
+        92deg,
+        rgb(4 23 61 / 90%) 0%,
+        rgb(4 23 61 / 88%) 38%,
+        rgb(4 23 61 / 80%) 61%,
+        rgb(4 23 61 / 40%) 74%,
+        rgb(4 23 61 / 22%) 88%,
+        rgb(4 23 61 / 18%) 100%
+      );
+  }
 }
 
 /* Narrow viewports: the text spans the full width, so the scrim has to as
@@ -1074,9 +1139,20 @@ a:hover {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   pointer-events: none;
   border-radius: inherit;
   box-shadow: var(--ring);
+  background-image: var(--sheen);
+}
+
+.frame--zoom {
+  transition: box-shadow 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+.frame--zoom:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
 }
 
 .frame img {
@@ -1087,18 +1163,16 @@ a:hover {
 
 .frame--zoom:hover img { transform: scale(1.03); }
 
-.frame--safe img {
-  aspect-ratio: 3 / 2;
+.frame--safe img,
+.frame--safe-tall img {
   object-fit: contain;
   background: transparent;
-  padding: clamp(0.5rem, 0.3rem + 0.8vw, 1rem);
+  padding: clamp(0.6rem, 0.4rem + 0.9vw, 1.2rem);
+  filter: var(--drop);
 }
 
-.frame--safe-tall img {
-  aspect-ratio: 4 / 5;
-  object-fit: contain;
-  padding: clamp(0.5rem, 0.3rem + 0.8vw, 1rem);
-}
+.frame--safe img { aspect-ratio: 3 / 2; }
+.frame--safe-tall img { aspect-ratio: 4 / 5; }
 
 .frame figcaption {
   padding: 0.75rem 1rem;
@@ -1116,6 +1190,9 @@ a:hover {
 .ratio-4-5 img { aspect-ratio: 4 / 5; object-fit: cover; }
 .pos-top img { object-position: top center; }
 .pos-left img { object-position: left center; }
+/* Very tall source crops need the visible window pushed down the frame, or a
+   landscape box shows only the empty floor above the group. */
+.pos-lower img { object-position: center 62%; }
 
 /* ---------- Split ---------- */
 .split { display: grid; gap: var(--space-lg); align-items: center; }
@@ -1139,6 +1216,11 @@ a:hover {
 .grid > li { max-width: none; margin-bottom: 0; }
 .grid--2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr)); }
 .grid--wide { grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+
+@media (min-width: 46em) {
+  .grid--pair { grid-template-columns: 1fr 1fr; }
+}
+
 
 /* ---------- Cards ---------- */
 .card {
@@ -1172,8 +1254,10 @@ a:hover {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 2;
   pointer-events: none;
   box-shadow: var(--ring);
+  background-image: var(--sheen);
 }
 
 .card__media img {
@@ -1186,12 +1270,13 @@ a:hover {
 
 .card:hover .card__media img { transform: scale(1.05); }
 
-/* Mobility-aid-safe card media: contain rather than crop, sitting on the mat
-   with a little breathing room so the letterboxing looks intentional. */
+/* Mobility-aid-safe card media: contain rather than crop, mounted on the mat
+   with a cast shadow so the letterboxing reads as deliberate framing. */
 .card__media--safe img {
   object-fit: contain;
   background: transparent;
-  padding: 0.9rem;
+  padding: 1rem;
+  filter: var(--drop);
 }
 
 .card__media--tall img { aspect-ratio: 3 / 4; }
@@ -1201,7 +1286,7 @@ a:hover {
   object-fit: contain;
   background: transparent;
   padding: 1.1rem 1.1rem 0;
-  filter: drop-shadow(0 6px 14px rgb(4 23 61 / 18%));
+  filter: var(--drop);
 }
 
 .card__body {
@@ -1225,6 +1310,26 @@ a:hover {
 
 .card__link { margin-top: auto; padding-top: var(--space-sm); font-weight: 700; }
 
+/* Horizontal card: artwork on the left, text on the right. Declared after the
+   base `.card` rules, which share its specificity and would otherwise win. */
+@media (min-width: 34em) {
+  .card--row { flex-direction: row; align-items: stretch; }
+
+  .card--row .card__media {
+    flex: 0 0 clamp(10rem, 36%, 15rem);
+    border-bottom: 0;
+    border-right: 1px solid var(--border);
+  }
+
+  .card--row .card__media img {
+    height: 100%;
+    aspect-ratio: auto;
+    padding: 0.85rem;
+  }
+
+  .card--row .card__body { justify-content: center; }
+}
+
 /* ---------- Pillars ---------- */
 .pillars {
   display: grid;
@@ -1247,6 +1352,20 @@ a:hover {
 }
 
 .pillars > li:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+
+/* A set of exactly five pillars would otherwise strand the fifth alone on a
+   second row. Detect that case and centre the trailing pair over six columns.
+   `:first-child:nth-last-child(5)` matches only when there are five items, so
+   the four-item set on the accessibility page keeps the default flow. */
+@media (min-width: 62em) {
+  .pillars:has(> li:first-child:nth-last-child(5)) {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .pillars:has(> li:first-child:nth-last-child(5)) > li { grid-column: span 2; }
+  .pillars:has(> li:first-child:nth-last-child(5)) > li:nth-child(4) { grid-column: 2 / span 2; }
+  .pillars:has(> li:first-child:nth-last-child(5)) > li:nth-child(5) { grid-column: 4 / span 2; }
+}
 
 .pillars > li:nth-child(4n + 2) { border-top-color: var(--green); }
 .pillars > li:nth-child(4n + 3) { border-top-color: var(--amber); }
