@@ -970,31 +970,72 @@ a:hover {
   }
 }
 
-/* Narrow viewports: the text spans the full width, so the scrim has to as
-   well. The image still reads through at 82%. */
-@media (max-width: 62em) {
-  .hero__media::after {
-    background:
-      linear-gradient(
-        180deg,
-        rgb(4 23 61 / 30%) 0%,
-        rgb(4 23 61 / 12%) 30%,
-        rgb(4 23 61 / 46%) 100%
-      ),
-      linear-gradient(
-        92deg,
-        rgb(4 23 61 / 84%) 0%,
-        rgb(4 23 61 / 80%) 70%,
-        rgb(4 23 61 / 74%) 100%
-      );
-  }
-}
-
 .hero__inner { padding-block: clamp(3rem, 2rem + 6vw, 6rem); }
 .hero__panel { max-width: 46rem; }
 
 .hero h1 { color: #fff; font-size: var(--step-5); margin-bottom: var(--space-md); }
 .hero__lede { font-size: var(--step-1); color: #e2edfb; max-width: 46ch; }
+
+/* Narrow viewports: stack instead of overlaying.
+
+   A 2.40 landscape photograph cannot be cropped into a portrait hero box and
+   still read as a scene. Measured, the background treatment showed only 16.2%
+   of the image width at 390px and 11.6% at 320px -- a vertical strip of
+   torsos -- and upscaled the source 1.6x to do it.
+
+   So below 62em the photograph leaves the background and becomes a band of
+   its own beneath the text: the whole group stays visible, the source is
+   downscaled rather than blown up, and because no text sits over it the
+   reading scrim can go away entirely. */
+@media (max-width: 62em) {
+  .hero {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Only the image moves. It contains nothing focusable and nothing that
+     carries meaning in sequence, so the reading and tab order are unchanged. */
+  .hero__inner { order: 1; }
+  .hero__media { order: 2; }
+  .supporters  { order: 3; }
+
+  .hero__media {
+    position: static;
+    z-index: auto;
+    aspect-ratio: 3 / 2;
+    /* 3/2 suits a phone, but the same ratio on a 990px tablet would make the
+       band 660px tall. Capping the height lets the ratio widen with the
+       viewport instead, which also reveals more of the group. */
+    max-block-size: min(26rem, 52vh);
+    border-block: 1px solid rgb(255 255 255 / 20%);
+  }
+
+  .hero__media img { object-position: center 42%; }
+
+  /* The group sits right of centre in the wide crop. The Y value only bites on
+     landscape phones, where the capped band is wider than the image and the
+     crop axis flips from X to Y. */
+  .hero__media--group img { object-position: 88% 60%; }
+
+  /* No text overlays the band now, so this is purely a seam: the navy of the
+     surrounding section bleeding a little way into the photograph so the two
+     do not meet on a hard line. */
+  .hero__media::after {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(4 23 61 / 46%) 0%,
+        rgb(4 23 61 / 0%) 22%,
+        rgb(4 23 61 / 0%) 74%,
+        rgb(4 23 61 / 40%) 100%
+      );
+  }
+
+  .hero__inner { padding-block-end: clamp(2rem, 1.5rem + 3vw, 3rem); }
+
+  /* A solid black band would be all that survived of the photograph. */
+  html[data-contrast="high"] .hero__media { display: none; }
+}
 
 .chip {
   display: inline-flex;
