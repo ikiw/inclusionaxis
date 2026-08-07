@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://inclusionaxisfoundation.com/sitemap.xml
