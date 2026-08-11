@@ -997,7 +997,6 @@ a:hover {
      carries meaning in sequence, so the reading and tab order are unchanged. */
   .hero__inner { order: 1; }
   .hero__media { order: 2; }
-  .supporters  { order: 3; }
 
   .hero__media {
     position: static;
@@ -1054,44 +1053,6 @@ a:hover {
 .chip__dot {
   width: 10px;
   height: 10px;
-  border-radius: 50%;
-  background: var(--amber);
-  flex: none;
-}
-
-.supporters { border-top: 1px solid rgb(255 255 255 / 24%); padding-block: var(--space-md); }
-
-.supporters h2 {
-  font-size: var(--step--1);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sky);
-  margin-bottom: var(--space-xs);
-}
-
-.supporters ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.75rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.supporters li {
-  max-width: none;
-  margin-bottom: 0;
-  color: #fff;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.supporters li::before {
-  content: "";
-  width: 7px;
-  height: 7px;
   border-radius: 50%;
   background: var(--amber);
   flex: none;
@@ -1753,16 +1714,6 @@ a:hover {
 
   .cta__actions .btn-row { margin-top: var(--space-sm); }
 
-  /* Two neat columns instead of a ragged inline wrap. */
-  .supporters ul {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.35rem 0.9rem;
-  }
-
-  .supporters li { font-size: 0.9rem; align-items: flex-start; }
-  .supporters li::before { margin-top: 0.55em; }
-
   /* Preference pills fill the row so they are unambiguous targets. */
   .prefs__grid { gap: var(--space-sm); }
   .opt-row { flex-direction: column; align-items: stretch; }
@@ -1788,7 +1739,6 @@ a:hover {
 
   .brand img { width: 38px; height: 38px; }
 
-  .supporters ul { grid-template-columns: 1fr; }
 
   .feature__thumbs { grid-template-columns: 1fr; }
 
