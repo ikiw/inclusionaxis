@@ -406,29 +406,6 @@ a:hover {
   margin: var(--space-sm) 0 var(--space-md);
 }
 
-/* Plain-language summary box — cognitive accessibility. */
-.in-short {
-  background: var(--surface-sky);
-  background-image: var(--grad-sky);
-  border-left: 6px solid var(--teal-600);
-  border-radius: 0 var(--radius) var(--radius) 0;
-  padding: var(--space-md);
-  margin-bottom: var(--space-lg);
-}
-
-.in-short h2,
-.in-short h3 {
-  font-size: var(--step-0);
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: var(--blue-900);
-  margin-bottom: var(--space-2xs);
-}
-
-.in-short:last-child { margin-bottom: 0; }
-.in-short p:last-child { margin-bottom: 0; }
-.in-short p { max-width: 60ch; }
-
 /* ---------- Skip links ---------- */
 .skip-link {
   position: absolute;
@@ -917,17 +894,18 @@ a:hover {
       rgb(4 23 61 / 90%) 0%,
       rgb(4 23 61 / 88%) 50%,
       rgb(4 23 61 / 82%) 70%,
-      rgb(4 23 61 / 76%) 79%,
-      rgb(4 23 61 / 40%) 90%,
-      rgb(4 23 61 / 26%) 100%
+      rgb(4 23 61 / 76%) 80%,
+      rgb(4 23 61 / 22%) 88%,
+      rgb(4 23 61 / 10%) 100%
     );
 }
 
 /* The text column is a fixed 46rem, so the wider the viewport the smaller the
    fraction of it the text occupies. Measured text edges: 75.6% at 1000px,
-   61.4% at 1280px, 59.1% at 1600px. Each step therefore holds the plateau to
-   just past the measured edge and then clears earlier, letting more of the
-   photograph through without ever dropping the text below 7:1. */
+   61.4% at 1280px, 59.1% at 1600px. Each step holds the plateau to just past
+   the measured edge, then clears quickly (rather than trailing off slowly)
+   so the founder in the wheelchair -- who sits roughly 65-80% across the
+   frame at these widths -- is not left half-dimmed by a long fade. */
 @media (min-width: 75em) {
   .hero__media::after {
     background:
@@ -942,9 +920,9 @@ a:hover {
         rgb(4 23 61 / 90%) 0%,
         rgb(4 23 61 / 88%) 40%,
         rgb(4 23 61 / 80%) 63%,
-        rgb(4 23 61 / 44%) 77%,
-        rgb(4 23 61 / 24%) 90%,
-        rgb(4 23 61 / 20%) 100%
+        rgb(4 23 61 / 25%) 70%,
+        rgb(4 23 61 / 10%) 85%,
+        rgb(4 23 61 / 6%) 100%
       );
   }
 }
@@ -963,9 +941,9 @@ a:hover {
         rgb(4 23 61 / 90%) 0%,
         rgb(4 23 61 / 88%) 38%,
         rgb(4 23 61 / 80%) 61%,
-        rgb(4 23 61 / 40%) 74%,
-        rgb(4 23 61 / 22%) 88%,
-        rgb(4 23 61 / 18%) 100%
+        rgb(4 23 61 / 22%) 68%,
+        rgb(4 23 61 / 8%) 85%,
+        rgb(4 23 61 / 5%) 100%
       );
   }
 }
@@ -1838,8 +1816,7 @@ html[data-motion="off"] .reveal { opacity: 1 !important; transform: none !import
   .band--cream,
   .band--sky,
   .band--navy,
-  .site-header,
-  .in-short { background-image: none; }
+  .site-header { background-image: none; }
 
   .site-header::after { background: CanvasText; }
 
